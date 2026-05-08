@@ -1,0 +1,19 @@
+{
+  "operarios": [
+    "María Pérez",
+    "Juan Gómez",
+    "Laura Restrepo"
+  ],
+  "operaciones": [
+    { "nombre": "Costura Recta", "precio": 500 },
+    { "nombre": "Fileteado", "precio": 1000 },
+    { "nombre": "Corte de tela", "precio": 1500 },
+    { "nombre": "Pegado de Botones", "precio": 2000 }
+  ],
+  "valoresSugeridos": [
+    500,
+    1000,
+    1500,
+    2000
+  ]
+}

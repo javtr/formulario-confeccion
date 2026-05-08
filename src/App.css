@@ -1,0 +1,32 @@
+/* Estilos específicos para el momento en el que se presiona "Imprimir" */
+@media print {
+  @page {
+    /* Configura el tamaño EXACTO a Media Carta (Statement size) */
+    /* El navegador respetará esto si eliges "Guardar como PDF" */
+    size: 5.5in 8.5in;
+    margin: 5mm;
+  }
+
+  body {
+    background-color: white !important;
+  }
+
+  /* Limpiar los estilos de los inputs para que parezcan texto impreso normal */
+  input {
+    background: transparent !important;
+    color: black !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+  }
+
+  /* Ocultar la flecha de los datalist y campos de fecha al imprimir */
+  input::-webkit-calendar-picker-indicator {
+    display: none !important;
+  }
+  input::-webkit-inner-spin-button, 
+  input::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+  }
+}
