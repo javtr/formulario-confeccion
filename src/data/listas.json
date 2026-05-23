@@ -1,19 +1,33 @@
 {
-  "operarios": [
-    "María Pérez",
-    "Juan Gómez",
-    "Laura Restrepo"
-  ],
+"operarios": [
+  "David Terán",
+  "Michael Pérez",
+  "Iris Bravo",
+  "Jairo Cataño",
+  "Marina Martínez",
+  "Arley Martínez",
+  "Álvaro Morales",
+  "Harrison Ortiz",
+  "Isabel Andrade"
+],
   "operaciones": [
-    { "nombre": "Costura Recta", "precio": 500 },
-    { "nombre": "Fileteado", "precio": 1000 },
-    { "nombre": "Corte de tela", "precio": 1500 },
-    { "nombre": "Pegado de Botones", "precio": 2000 }
+    { "nombre": "Filetear", "precio": 750 },
+    { "nombre": "Delantero sin", "precio": 700 },
+    { "nombre": "Delantero con", "precio": 900 },
+    { "nombre": "Ribete", "precio": 1700 },
+    { "nombre": "Pretina punta", "precio": 1000 },
+    { "nombre": "Pretina caja", "precio": 1200 },
+    { "nombre": "Encintar", "precio": 300 },
+    { "nombre": "Plancha precilla", "precio": 700 },
+    { "nombre": "Limpiar empacar", "precio": 300 }
   ],
   "valoresSugeridos": [
-    500,
+    300,
+    700,
+    750,
+    900,
     1000,
-    1500,
-    2000
+    1200,
+    1700
   ]
 }

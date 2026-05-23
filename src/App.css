@@ -1,9 +1,8 @@
 /* Estilos específicos para el momento en el que se presiona "Imprimir" */
 @media print {
   @page {
-    /* Configura el tamaño EXACTO a Media Carta (Statement size) */
-    /* El navegador respetará esto si eliges "Guardar como PDF" */
-    size: 5.5in 8.5in;
+    /* Configura el tamaño EXACTO a Carta (Letter) */
+    size: letter;
     margin: 5mm;
   }
 
