@@ -86,16 +86,42 @@ function App() {
     if (!reciboRef.current) return;
     
     try {
+      const el = reciboRef.current;
+      const targetWidth = el.offsetWidth;
+
+      // 1. Clonar temporalmente para medir la altura sin los botones
+      const clone = el.cloneNode(true);
+      
+      // Remover botones para no contarlos en la altura
+      const ignoredElements = clone.querySelectorAll('[data-html2canvas-ignore="true"]');
+      ignoredElements.forEach(node => node.remove());
+      
+      // Usar el ancho actual del dispositivo
+      clone.style.width = targetWidth + 'px';
+      clone.style.position = 'absolute';
+      clone.style.left = '-9999px';
+      clone.style.visibility = 'hidden';
+      
+      document.body.appendChild(clone);
+      const targetHeight = clone.offsetHeight;
+      document.body.removeChild(clone);
+
       // Filtramos los elementos que tienen el atributo de ignorar
       const filter = (node) => {
         return node.dataset?.html2canvasIgnore !== 'true';
       };
 
-      // Generamos el blob directamente usando el motor nativo del navegador
-      const blob = await toBlob(reciboRef.current, { 
+      // 2. Generamos la imagen con las medidas reales
+      const blob = await toBlob(el, { 
         pixelRatio: 2, 
         filter: filter,
-        backgroundColor: '#ffffff' // Asegura que el fondo sea blanco
+        backgroundColor: '#ffffff', // Asegura que el fondo sea blanco
+        width: targetWidth,
+        height: targetHeight,
+        style: {
+          width: targetWidth + 'px',
+          margin: '0'
+        }
       });
       
       if (!blob) return;
@@ -225,32 +251,51 @@ function App() {
           </div>
         </div>
 
-        {/* === TABLA DE OPERACIONES === */}
-        <div className="mb-4 min-h-[150px] overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[450px]">
-            <thead>
-              <tr className="border-b-2 border-gray-300">
-                <th className="py-2 text-sm font-bold text-gray-600 uppercase">Operación</th>
-                <th className="py-2 text-sm font-bold text-gray-600 uppercase text-center">Cant.</th>
-                <th className="py-2 text-sm font-bold text-gray-600 uppercase text-right">V. Unit ($)</th>
-                <th className="py-2 text-sm font-bold text-gray-600 uppercase text-right">Subtotal</th>
-                <th data-html2canvas-ignore="true" className="py-2 text-sm font-bold text-gray-600 uppercase text-center print:hidden w-10"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {listaOperaciones.map((item, index) => (
-                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 print:hover:bg-transparent text-gray-800">
-                  <td className="py-2 print:py-1">{item.operacion}</td>
-                  <td className="py-2 print:py-1 text-center">{item.cantidad}</td>
-                  <td className="py-2 print:py-1 text-right">${Number(item.valorUnitario).toLocaleString()}</td>
-                  <td className="py-2 print:py-1 text-right font-medium">${(Number(item.cantidad) * Number(item.valorUnitario)).toLocaleString()}</td>
-                  <td data-html2canvas-ignore="true" className="py-2 text-center print:hidden">
-                    <button onClick={() => eliminarOperacion(index)} className="text-red-500 hover:text-red-700 font-bold px-2">X</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* === LISTA DE OPERACIONES (Diseño Responsivo) === */}
+        <div className="mb-4 min-h-[150px]">
+          {/* Encabezados de tabla para desktop */}
+          <div className="hidden sm:grid grid-cols-12 gap-2 border-b-2 border-gray-300 pb-2 mb-2">
+            <div className="col-span-5 text-sm font-bold text-gray-600 uppercase">Operación</div>
+            <div className="col-span-2 text-sm font-bold text-gray-600 uppercase text-center">Cant.</div>
+            <div className="col-span-2 text-sm font-bold text-gray-600 uppercase text-right">V. Unit ($)</div>
+            <div className="col-span-2 text-sm font-bold text-gray-600 uppercase text-right">Subtotal</div>
+            <div data-html2canvas-ignore="true" className="col-span-1 print:hidden"></div>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:gap-0">
+            {listaOperaciones.map((item, index) => (
+              <div key={index} className="flex flex-col sm:grid sm:grid-cols-12 gap-1 sm:gap-2 sm:items-center border-b border-gray-200 pb-3 pt-2 sm:py-2 hover:bg-gray-50 print:hover:bg-transparent text-gray-800">
+                
+                {/* Operación y botón eliminar (móvil) */}
+                <div className="flex justify-between items-start sm:col-span-5">
+                  <span className="font-bold sm:font-normal">{item.operacion}</span>
+                  <button data-html2canvas-ignore="true" onClick={() => eliminarOperacion(index)} className="text-red-500 hover:text-red-700 font-bold px-2 sm:hidden">X</button>
+                </div>
+
+                {/* Detalles (Grid en móvil, elements sueltos en PC) */}
+                <div className="grid grid-cols-2 gap-1 sm:contents text-sm sm:text-base text-gray-600 sm:text-gray-800 mt-1 sm:mt-0">
+                  <div className="sm:col-span-2 sm:text-center">
+                    <span className="sm:hidden font-semibold mr-1">Cant:</span>
+                    {item.cantidad}
+                  </div>
+                  <div className="text-right sm:col-span-2">
+                    <span className="sm:hidden font-semibold mr-1">V. Un:</span>
+                    ${Number(item.valorUnitario).toLocaleString()}
+                  </div>
+                  <div className="col-span-2 sm:col-span-2 text-right font-medium text-gray-900 sm:text-gray-800 border-t border-gray-100 sm:border-0 pt-1 mt-1 sm:pt-0 sm:mt-0">
+                    <span className="sm:hidden font-semibold mr-1 text-gray-600">Subtotal:</span>
+                    ${(Number(item.cantidad) * Number(item.valorUnitario)).toLocaleString()}
+                  </div>
+                </div>
+
+                {/* Botón eliminar (desktop) */}
+                <div data-html2canvas-ignore="true" className="hidden sm:block col-span-1 text-center print:hidden">
+                  <button onClick={() => eliminarOperacion(index)} className="text-red-500 hover:text-red-700 font-bold px-2">X</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
           {listaOperaciones.length === 0 && (
             <p data-html2canvas-ignore="true" className="text-center text-gray-400 my-6 text-sm italic print:hidden">Aún no hay operaciones agregadas a este recibo.</p>
           )}
